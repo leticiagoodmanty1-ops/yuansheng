@@ -139,10 +139,21 @@ def evaluate(args, model, features, tag="dev"):
     preds = np.concatenate(preds, axis=0).astype(np.float32)
     ans = to_official(preds, features)
     if len(ans) > 0:
-        best_f1, _, best_f1_ign, _ = official_evaluate(ans, args.data_dir)
+        results = official_evaluate(ans, args.data_dir)
+        best_f1 = results['overall']['f1']
+        best_f1_ign = results['overall']['f1_ign']
+        intra_f1 = results['intra']['f1']
+        inter_f1 = results['inter']['f1']
+    else:
+        best_f1 = 0
+        best_f1_ign = 0
+        intra_f1 = 0
+        inter_f1 = 0
     output = {
         tag + "_F1": best_f1 * 100,
         tag + "_F1_ign": best_f1_ign * 100,
+        tag + "_Intra_F1": intra_f1 * 100,
+        tag + "_Inter_F1": inter_f1 * 100,
     }
     return best_f1, output
 
